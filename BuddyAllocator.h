@@ -12,7 +12,7 @@ typedef struct{
 } BuddyAllocator;
 
 //funzione per inizializzare il buddyallocator
-void BuddyAllocator_init(BitMap* bitmap,int num_lev, char* mem, int min_buck_size, int buff_size);
+void BuddyAllocator_init(BuddyAllocator* buddy ,BitMap* bitmap,int num_lev, char* mem, int min_buck_size, int buff_size);
 
 //funzione per allocare memoria col buddy system
 void* BuddyAllocator_malloc(BuddyAllocator* buddy_allocator, int size);
