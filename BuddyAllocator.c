@@ -25,7 +25,7 @@ int first_level(int level){
     return (2<<level)-1;
 }
 
- void BuddyAllocator_init(BuddyAllocator* buddy,char* memory_buff, int mem_buff_size, BitMap* bitmap, int num_lev,uint8_t* bitmap_buff, int bitmap_buff_size, int min_bucket_size){
+ void BuddyAllocator_init(BuddyAllocator* buddy,char* memory_buff, int mem_buff_size, int num_lev,uint8_t* bitmap_buff, int bitmap_buff_size, int min_bucket_size){
     assert("number of levels must be less than 16\n buddy_init aborted\n" && num_lev < MAX_LEVEL);
     int num_bits= 1<< (num_lev+1)-1;
     assert("insufficent bitmap memory\n" && (BitMap_getBytes(num_bits)<= bitmap_buff_size));
@@ -49,7 +49,4 @@ int first_level(int level){
     printf("\ninitialized bitmap\n");
     printf("\n BUDDY ALLOCATOR READY FOR DUTY\n");
     return;
-
-
-
 }
