@@ -12,13 +12,15 @@ BuddyAllocator buddy;
 
 int main(int argc,char** argv) {
     int buff_size= BUFFER_SIZE;
-    int levs = MAX_LEVEL;
+    int levs = BUDDY_LEVELS;
     int min_buck_size = buff_size>> (levs);
 
     char buffer[buff_size];
 
     //intialize buddy allocator
+    int ris;
+    ris = BuddyAllocator_init(&buddy,buffer,buff_size,levs,bitmap_buff,MEMORY_SIZE,min_buck_size);
+    if (ris == 0) printf("BUDDY INITIALIZATION FAILED");
 
-    BuddyAllocator_init(&buddy,buffer,buff_size,levs,bitmap_buff,MEMORY_SIZE,min_buck_size);
     return 0;
 }
