@@ -52,12 +52,12 @@ void Print_Buddy(BitMap* bitmap){
 
  int BuddyAllocator_init(BuddyAllocator* buddy,char* memory_buff, int mem_buff_size, int num_lev,uint8_t* bitmap_buff, int bitmap_buff_size, int min_bucket_size){
     if(num_lev > MAX_LEVEL){
-        printf("ERROR: LEVEL NUMBER EXCEED MAXIMUM");
+        printf("ERROR: LEVEL NUMBER EXCEED MAXIMUM\n");
         return 0;
     }
     int num_bits= (1<< (num_lev+1))-1;
     if(BitMap_getBytes(num_bits)> bitmap_buff_size){
-        printf("ERROR: MEMORY  INSUFFICIENT");
+        printf("ERROR: MEMORY  INSUFFICIENT\n");
         return 0;
     }
     if(level_index(mem_buff_size) != log2(mem_buff_size)) {
@@ -89,11 +89,11 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
         return NULL;
     }
     
-    printf("\nALLOCATING %d BYTES + %d BYTES TO STORE INDEX : %d BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int));
+    printf("\nALLOCATING %d BYTES + %ld BYTES TO STORE INDEX : %ld BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int));
     size+=sizeof(int);
 
     if(size>buddY_allocator->buffer_size){
-        printf("\nERROR: memory request exceed available memory");
+        printf("\nERROR: memory request exceed available memory\n");
         return NULL;
     }
     int block_level;
@@ -122,6 +122,9 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
 
     printf("\nBLOCK LEVEL FOUND :\t %d", block_level);
 
+    printf("\n");
+    return NULL;
     //now let's find a free item on the level
 
+    
 }

@@ -19,8 +19,11 @@ int main(int argc,char** argv) {
 
     //intialize buddy allocator
     int ris;
+    void* res;
     ris = BuddyAllocator_init(&buddy,buffer,buff_size,levs,bitmap_buff,MEMORY_SIZE,min_buck_size);
     if (ris == 0) printf("BUDDY INITIALIZATION FAILED");
+
+    res = BuddyAllocator_malloc(&buddy,120);
 
     return 0;
 }
