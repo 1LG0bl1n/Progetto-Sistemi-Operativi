@@ -183,3 +183,16 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     printf("\n");
     return (void*)(address+sizeof(int));
 }
+
+void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
+    if(mem == NULL) printf("\nERRORE:\t cannot free an unallocated block\n");
+
+
+    int* mem_ptr= (int*)mem;
+    int block_index = mem_ptr[-1];
+    printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER %p AND INDEX %d",mem_ptr,block_index);
+    
+
+    printf("\n");
+    return;
+}

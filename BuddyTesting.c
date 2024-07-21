@@ -25,5 +25,9 @@ int main(int argc,char** argv) {
 
     res = BuddyAllocator_malloc(&buddy,500);
 
+    BuddyAllocator_free(&buddy,res);
+
+
+
     return 0;
 }
