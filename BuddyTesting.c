@@ -3,8 +3,8 @@
 #include<stdlib.h>
 #include<string.h>
 
-#define BUFFER_SIZE 1025
-#define BUDDY_LEVELS 5
+#define BUFFER_SIZE 4096
+#define BUDDY_LEVELS 6
 #define MEMORY_SIZE 256
 
 char bitmap_buff[MEMORY_SIZE];
@@ -23,7 +23,7 @@ int main(int argc,char** argv) {
     ris = BuddyAllocator_init(&buddy,buffer,buff_size,levs,bitmap_buff,MEMORY_SIZE,min_buck_size);
     if (ris == 0) printf("BUDDY INITIALIZATION FAILED");
 
-    res = BuddyAllocator_malloc(&buddy,250);
+    res = BuddyAllocator_malloc(&buddy,500);
 
     return 0;
 }

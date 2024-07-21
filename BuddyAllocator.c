@@ -21,8 +21,14 @@ int parent_index(int idx) {
 }
 
 // return first index of level
-int first_level(int level){
+int first_index_level(int level){
     return (2<<level)-1;
+}
+
+
+//return offset from start of level to block
+int block_offset(int index){
+    return index-first_index_level(level_index(index));
 }
 
 void set_bit_children(BitMap* bitmap, int num_bit,int value){ // implemented throug recourtion to not use a queue 
@@ -142,7 +148,7 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     printf("\nBLOCK LEVEL FOUND :\t %d", block_level);
 
     //now let's find a free item on the level 
-    /*
+    
     int block_index = -1;
     int j;
     if(block_level == 0){
@@ -151,13 +157,29 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
         }
     }
     else{
+        for(j = first_index_level(block_level); j<first_index_level(block_level+1);j++) {
+            if(BitMap_bit(&buddY_allocator->bitmap,j) == 0){
+                block_index=j;
+                printf("\n\t\t\t\t\t \033[1;33m FREE BUDDY FOUND AT INDEX: %d\033[0m" , block_index);
+                break;
+            }
 
-    }*/
+        }
+    }
+    if (block_index ==-1){
+        printf("\n ERROR: no free buddy available of size %d\n", size);
+        return NULL;
+    }
+    set_bit_children(&buddY_allocator->bitmap,block_index,1);
+    set_bit_ancestors(&buddY_allocator->bitmap,block_index,1);
 
-    printf("\n");
-    set_bit_children(&buddY_allocator->bitmap,10,1);
-    set_bit_ancestors(&buddY_allocator->bitmap,10,1);
+    char* address = buddY_allocator->buffer+(block_offset(block_index)*block_size);
+   *((int*)address) = block_index;
+   printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m \n" , size,block_level,block_index);
+       
+    printf("\n Resulting BitMap Tree: \n");
 
     Print_Buddy(&buddY_allocator->bitmap);
     printf("\n");
+    return (void*)(address+sizeof(int));
 }
