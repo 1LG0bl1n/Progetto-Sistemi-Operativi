@@ -26,17 +26,15 @@ int first_level(int level){
 }
 
 void set_bit_children(BitMap* bitmap, int num_bit,int value){ // implemented throug recourtion to not use a queue 
-    if(num_bit> bitmap->num_bits){
-        return;
-    }
-    else{
+    if(num_bit< bitmap->num_bits){
         BitMap_setBit(bitmap,num_bit,value);
-        set_bit_children(bitmap,2*num_bit+1,value);
-        set_bit_children(bitmap,2*num_bit+1,value);
+        set_bit_children(bitmap,(num_bit*2)+1,value);
+        set_bit_children(bitmap,(num_bit*2)+2,value);
     }
 }
 
 void set_bit_ancestors(BitMap* bitmap,int num_bit, int value) {
+    BitMap_setBit(bitmap,num_bit,value);
     if(num_bit==0) return;
     else {
         BitMap_setBit(bitmap,num_bit,value);
@@ -48,7 +46,7 @@ void set_bit_ancestors(BitMap* bitmap,int num_bit, int value) {
 
 //prints the bitmap as a buddyAllocator tree
 void Print_Buddy(BitMap* bitmap){
-    printf("%d \n" , bitmap->num_bits);
+    printf("\n%d \n" , bitmap->num_bits);
     int bit_on_levl_to_print = 0;
     int levl_ctr = -1;
     int levl_tot = level_index(bitmap->num_bits)-1;
@@ -156,5 +154,10 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
 
     }*/
 
+    printf("\n");
+    set_bit_children(&buddY_allocator->bitmap,10,1);
+    set_bit_ancestors(&buddY_allocator->bitmap,10,1);
+
+    Print_Buddy(&buddY_allocator->bitmap);
     printf("\n");
 }
