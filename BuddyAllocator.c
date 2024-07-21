@@ -25,8 +25,29 @@ int first_level(int level){
     return (2<<level)-1;
 }
 
-void Print_Buddy(BitMap* bitmap){
+void set_bit_children(BitMap* bitmap, int num_bit,int value){ // implemented throug recourtion to not use a queue 
+    if(num_bit> bitmap->num_bits){
+        return;
+    }
+    else{
+        BitMap_setBit(bitmap,num_bit,value);
+        set_bit_children(bitmap,2*num_bit+1,value);
+        set_bit_children(bitmap,2*num_bit+1,value);
+    }
+}
 
+void set_bit_ancestors(BitMap* bitmap,int num_bit, int value) {
+    if(num_bit==0) return;
+    else {
+        BitMap_setBit(bitmap,num_bit,value);
+        set_bit_ancestors(bitmap,parent_index(num_bit),value);
+    }
+}
+
+
+
+//prints the bitmap as a buddyAllocator tree
+void Print_Buddy(BitMap* bitmap){
     printf("%d \n" , bitmap->num_bits);
     int bit_on_levl_to_print = 0;
     int levl_ctr = -1;
@@ -122,9 +143,18 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
 
     printf("\nBLOCK LEVEL FOUND :\t %d", block_level);
 
-    printf("\n");
-    return NULL;
-    //now let's find a free item on the level
+    //now let's find a free item on the level 
+    /*
+    int block_index = -1;
+    int j;
+    if(block_level == 0){
+        if(!BitMap_bit(&buddY_allocator->bitmap,0)){
+            block_index = 0;
+        }
+    }
+    else{
 
-    
+    }*/
+
+    printf("\n");
 }
