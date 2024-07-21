@@ -82,3 +82,46 @@ void Print_Buddy(BitMap* bitmap){
     Print_Buddy(&buddy->bitmap);
     return 1;
 }
+
+void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
+    if(size == 0){
+        printf("\nERROR: CANNOT ALLOCATE 0 BYTES");
+        return NULL;
+    }
+    
+    printf("\nALLOCATING %d BYTES + %d BYTES TO STORE INDEX : %d BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int));
+    size+=sizeof(int);
+
+    if(size>buddY_allocator->buffer_size){
+        printf("\nERROR: memory request exceed available memory");
+        return NULL;
+    }
+    int block_level;
+    int block_size;
+
+    printf("\nLOOKING FOR THE APROPRIATE BLOCK LEVEL . . .");
+
+    if (size>(buddY_allocator->buffer_size)/2){
+        block_level =0;
+        block_size= buddY_allocator->buffer_size;
+    }
+    else{
+        block_level=buddY_allocator->num_levels;
+        block_size =buddY_allocator->minimum_bucket_size;
+        for(int i= 0; i<=buddY_allocator->num_levels; i++){
+            if(size<= block_size){
+                break;
+            }
+            else{
+                block_level--;
+                block_size*=2;
+            }
+        }
+
+    }
+
+    printf("\nBLOCK LEVEL FOUND :\t %d", block_level);
+
+    //now let's find a free item on the level
+
+}
