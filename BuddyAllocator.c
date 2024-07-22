@@ -190,8 +190,8 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
 
     int* mem_ptr= (int*)mem;
     int block_index = mem_ptr[-1];
-    printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER %p AND INDEX %d",mem_ptr,block_index);
-    
+    printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem_ptr,block_index);
+
 
     printf("\n");
     return;
