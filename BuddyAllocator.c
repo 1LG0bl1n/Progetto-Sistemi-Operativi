@@ -174,23 +174,34 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     set_bit_ancestors(&buddY_allocator->bitmap,block_index,1);
 
     char* address = buddY_allocator->buffer+(block_offset(block_index)*block_size);
-   *((int*)address) = block_index;
-   printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m \n" , size,block_level,block_index);
+   ((int*)address)[0] = block_index;
+   address+=sizeof(int);
+   printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m and pointer  \033[1;33m%p\033[0m \n" , size,block_level,block_index,address);
        
     printf("\nResulting BitMap Tree: \n");
 
     Print_Buddy(&buddY_allocator->bitmap);
     printf("\n");
-    return (void*)(address+sizeof(int));
+    return (void*)(address);
 }
 
 void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
     if(mem == NULL) printf("\nERRORE:\t cannot free an unallocated block\n");
 
 
-    int* mem_ptr= (int*)mem;
+    int* mem_ptr= (int*)(mem);
     int block_index = mem_ptr[-1];
     printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem_ptr,block_index);
+
+    // got segmentation fault at the last free
+
+    int dimention =buddy_allocator->minimum_bucket_size* (1<<(buddy_allocator->num_levels - level_index(block_index)));
+    char* mem_ptr_check= (buddy_allocator->buffer) + dimention * block_offset(block_index);
+    if( (int*)mem_ptr_check != &mem_ptr[-1]){
+        printf("\nERROR:\t memory pointer unalligned\n");
+        return;
+    }
+
 
     if(BitMap_bit(&buddy_allocator->bitmap,block_index) == 0){
          printf("\nERROR:\tmemory block is already free\n");
@@ -210,7 +221,10 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
 }
 
 void BuddyAllocator_update(BitMap* bitmap,int index){
-
+    if(index == 0){
+        printf("\n BuddyAllocator_update finished ");
+        return;
+    }
     BitMap_setBit(bitmap,index,0);
     if(BitMap_bit(bitmap,index) == 1) {
         printf("\nERROR:\tmemory block has to be free\n");
