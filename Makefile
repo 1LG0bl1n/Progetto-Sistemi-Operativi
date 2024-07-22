@@ -27,4 +27,4 @@ BuddyTesting: BuddyTesting.o $(LIBS)
 	$(CC) $(CCOPTS) -o $@ $^ -lm
 
 clean:
-	rm -rf *.o $(LIBS) $(BINS)
+	rm -rf *.o *~ $(LIBS) $(BINS)

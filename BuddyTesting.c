@@ -19,24 +19,20 @@ int main(int argc,char** argv) {
 
     //intialize buddy allocator
     int ris;
-    void* p1;
-    void* p2;
-    void* p3;
-    void* p4;
-    void* p5;
+    
     ris = BuddyAllocator_init(&buddy,buffer,buff_size,levs,bitmap_buff,MEMORY_SIZE,min_buck_size);
     if (ris == 0) printf("BUDDY INITIALIZATION FAILED");
 
-    p1 = BuddyAllocator_malloc(&buddy,500);
-    p2 =BuddyAllocator_malloc(&buddy,500);
-    p3=BuddyAllocator_malloc(&buddy,500);
-    p4= BuddyAllocator_malloc(&buddy,500);
+    void*p1 = BuddyAllocator_malloc(&buddy,2000);
+    void*p2 =BuddyAllocator_malloc(&buddy,2000);
+    void*p3=BuddyAllocator_malloc(&buddy,2000);
+    //void*p4= BuddyAllocator_malloc(&buddy,1000);
     
 
     BuddyAllocator_free(&buddy,p1);
     BuddyAllocator_free(&buddy,p2);
     BuddyAllocator_free(&buddy,p3);
-    BuddyAllocator_free(&buddy,p4);
+    //BuddyAllocator_free(&buddy,p4);
     
 
 

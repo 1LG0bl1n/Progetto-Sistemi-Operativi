@@ -22,7 +22,7 @@ int parent_index(int idx) {
 
 // return first index of level
 int first_index_level(int level){
-    return (2<<level)-1;
+    return (1<<level)-1;
 }
 
 
@@ -52,7 +52,7 @@ void set_bit_ancestors(BitMap* bitmap,int num_bit, int value) {
 
 //prints the bitmap as a buddyAllocator tree
 void Print_Buddy(BitMap* bitmap){
-    printf("\n%d \n" , bitmap->num_bits);
+    printf("\n\033[1;33mNUMBER OF BITS: %d\033[0m \n" , bitmap->num_bits);
     int bit_on_levl_to_print = 0;
     int levl_ctr = -1;
     int levl_tot = level_index(bitmap->num_bits)-1;
@@ -173,15 +173,15 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     set_bit_children(&buddY_allocator->bitmap,block_index,1);
     set_bit_ancestors(&buddY_allocator->bitmap,block_index,1);
 
-    char* address = buddY_allocator->buffer+(block_offset(block_index)*block_size);
-   ((int*)address)[0] = block_index;
-   address+=sizeof(int);
+    char* address = buddY_allocator->buffer+block_offset(block_index)*block_size;
+   *((int*)address) = block_index;
    printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m and pointer  \033[1;33m%p\033[0m \n" , size,block_level,block_index,address);
        
     printf("\nResulting BitMap Tree: \n");
 
     Print_Buddy(&buddY_allocator->bitmap);
     printf("\n");
+    address+=sizeof(int);
     return (void*)(address);
 }
 
@@ -189,18 +189,18 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
     if(mem == NULL) printf("\nERRORE:\t cannot free an unallocated block\n");
 
 
-    int* mem_ptr= (int*)(mem);
-    int block_index = mem_ptr[-1];
+    char* mem_ptr= (char*)mem;
+    mem_ptr-=sizeof(int);
+    int block_index = *((int*)mem_ptr);
     printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem_ptr,block_index);
 
     // got segmentation fault at the last free
 
     int dimention =buddy_allocator->minimum_bucket_size* (1<<(buddy_allocator->num_levels - level_index(block_index)));
-    char* mem_ptr_check= (buddy_allocator->buffer) + dimention * block_offset(block_index);
-    if( (int*)mem_ptr_check != &mem_ptr[-1]){
-        printf("\nERROR:\t memory pointer unalligned\n");
-        return;
-    }
+    char* mem_ptr_check= buddy_allocator->buffer + dimention * block_offset(block_index);
+
+    
+     mem_ptr =  mem_ptr_check;
 
 
     if(BitMap_bit(&buddy_allocator->bitmap,block_index) == 0){
@@ -221,11 +221,11 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
 }
 
 void BuddyAllocator_update(BitMap* bitmap,int index){
+    BitMap_setBit(bitmap,index,0);
     if(index == 0){
         printf("\n BuddyAllocator_update finished ");
         return;
     }
-    BitMap_setBit(bitmap,index,0);
     if(BitMap_bit(bitmap,index) == 1) {
         printf("\nERROR:\tmemory block has to be free\n");
         return;
