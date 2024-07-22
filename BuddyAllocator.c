@@ -167,7 +167,7 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
         }
     }
     if (block_index ==-1){
-        printf("\n ERROR: no free buddy available of size %d\n", size);
+        printf("\nERROR: no free buddy available of size %d\n", size);
         return NULL;
     }
     set_bit_children(&buddY_allocator->bitmap,block_index,1);
@@ -177,7 +177,7 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
    *((int*)address) = block_index;
    printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m \n" , size,block_level,block_index);
        
-    printf("\n Resulting BitMap Tree: \n");
+    printf("\nResulting BitMap Tree: \n");
 
     Print_Buddy(&buddY_allocator->bitmap);
     printf("\n");
@@ -192,7 +192,34 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
     int block_index = mem_ptr[-1];
     printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem_ptr,block_index);
 
+    if(BitMap_bit(&buddy_allocator->bitmap,block_index) == 0){
+         printf("\nERROR:\tmemory block is already free\n");
+         return;
+    }
+    
+    set_bit_children(&buddy_allocator->bitmap,block_index,0);
 
+
+    printf("\nUPDATATING BUDDYALOCATOR TREE STRUCTURE STRARTING FROM INDEX \033[1;33m%d\033[0m . . .",block_index);
+    BuddyAllocator_update(&buddy_allocator->bitmap,block_index);
+
+    printf("\nBUDDYALLOCATOR TREE STRUCTURE AFTER FREE :");
     printf("\n");
+    Print_Buddy(&buddy_allocator->bitmap);
     return;
+}
+
+void BuddyAllocator_update(BitMap* bitmap,int index){
+
+    BitMap_setBit(bitmap,index,0);
+    if(BitMap_bit(bitmap,index) == 1) {
+        printf("\nERROR:\tmemory block has to be free\n");
+        return;
+    }
+    if(BitMap_bit(bitmap,buddy_index(index)) == 0){
+        BuddyAllocator_update(bitmap,parent_index(index));
+    }
+    else {
+        printf("\n BuddyAllocator_update finished ");
+    }
 }

@@ -21,3 +21,6 @@ void BuddyAllocator_free(BuddyAllocator* buddy,void* mem);
 
 //function to print BuddyAllocator tree structure
 void Print_Buddy(BitMap* bitmap);
+
+//update the buddy allocato structure afrer free
+void BuddyAllocator_update(BitMap* bitmap,int index);
