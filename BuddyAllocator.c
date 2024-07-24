@@ -75,14 +75,14 @@ void Print_Buddy(BitMap* bitmap){
 
 }
 
- int BuddyAllocator_init(BuddyAllocator* buddy,char* memory_buff, int mem_buff_size, int num_lev,uint8_t* bitmap_buff, int bitmap_buff_size, int min_bucket_size){
+ int BuddyAllocator_init(BuddyAllocator* buddy,char* memory_buff, int mem_buff_size, int num_lev,char* bitmap_buff, int bitmap_buff_size, int min_bucket_size){
     if(num_lev > MAX_LEVEL){
-        printf("ERROR: LEVEL NUMBER EXCEED MAXIMUM\n");
+        printf("\033[1;31mERROR:\033[0m LEVEL NUMBER EXCEED MAXIMUM\n");
         return 0;
     }
     int num_bits= (1<< (num_lev+1))-1;
     if(BitMap_getBytes(num_bits)> bitmap_buff_size){
-        printf("ERROR: MEMORY  INSUFFICIENT\n");
+        printf("\033[1;31mERROR:\033[0m MEMORY  INSUFFICIENT\n");
         return 0;
     }
     if(level_index(mem_buff_size) != log2(mem_buff_size)) {
@@ -110,15 +110,16 @@ void Print_Buddy(BitMap* bitmap){
 
 void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     if(size == 0){
-        printf("\nERROR: CANNOT ALLOCATE 0 BYTES");
+        printf("\\033[1;31mERROR:\033[0m CANNOT ALLOCATE 0 BYTES");
         return NULL;
     }
     
-    printf("\nALLOCATING %d BYTES + %ld BYTES TO STORE INDEX : %ld BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int));
+    printf("\nBUDDY SYSTEM ALLOCATING 033[1;33m%d\033[0m BYTES + 033[1;33m%ld\033[0m BYTES TO STORE INDEX + 1 BYTE TO STORE LABEL :033[1;33m%ld\033[0m BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int)+1);
     size+=sizeof(int);
+    size+=sizeof(char);
 
     if(size>buddY_allocator->buffer_size){
-        printf("\nERROR: memory request exceed available memory\n");
+        printf("\\033[1;31mERROR:\033[0m memory request exceed available memory\n");
         return NULL;
     }
     int block_level;
@@ -167,13 +168,15 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
         }
     }
     if (block_index ==-1){
-        printf("\nERROR: no free buddy available of size %d\n", size);
+        printf("\n\033[1;31mERROR:\033[0m no free buddy available of size %d\n", size);
         return NULL;
     }
     set_bit_children(&buddY_allocator->bitmap,block_index,1);
     set_bit_ancestors(&buddY_allocator->bitmap,block_index,1);
 
     char* address = buddY_allocator->buffer+block_offset(block_index)*block_size;
+    *address = 'b';
+    address+=sizeof(char);
    *((int*)address) = block_index;
    printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m and pointer  \033[1;33m%p\033[0m \n" , size,block_level,block_index,address);
        
@@ -186,7 +189,10 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
 }
 
 void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
-    if(mem == NULL) printf("\nERRORE:\t cannot free an unallocated block\n");
+    if(mem == NULL) {
+    printf("\n\033[1;31mERROR:\033[0m\t cannot free an unallocated block\n");
+    return;
+    }
 
 
     char* mem_ptr= (char*)mem;
@@ -204,7 +210,7 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
 
 
     if(BitMap_bit(&buddy_allocator->bitmap,block_index) == 0){
-         printf("\nERROR:\tmemory block is already free\n");
+         printf("\\033[1;31mERROR:\033[0m\tmemory block is already free\n");
          return;
     }
     
@@ -223,11 +229,11 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
 void BuddyAllocator_update(BitMap* bitmap,int index){
     BitMap_setBit(bitmap,index,0);
     if(index == 0){
-        printf("\n BuddyAllocator_update finished ");
+        printf("\nBuddyAllocator_update FINISHED ");
         return;
     }
     if(BitMap_bit(bitmap,index) == 1) {
-        printf("\nERROR:\tmemory block has to be free\n");
+        printf("\\033[1;31mERROR:\033[0m\tmemory block has to be free\n");
         return;
     }
     if(BitMap_bit(bitmap,buddy_index(index)) == 0){
