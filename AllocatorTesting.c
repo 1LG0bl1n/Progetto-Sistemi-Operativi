@@ -13,9 +13,11 @@ int main(int argc,char** argv) {
     ris = Allocator_init(&allocator);
     if (ris == 0) printf("\\033[1;31mERROR:\033[0m \t Allocator_init failed");
 
-    void*p1 = pseudo_malloc(&allocator,1000);
+    void*p1 = pseudo_malloc(&allocator,2000);
 
     pseudo_free(&allocator,p1);
+
+
     
 
 

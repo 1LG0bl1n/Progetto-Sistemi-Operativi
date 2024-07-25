@@ -45,16 +45,17 @@ void* pseudo_malloc(Allocator* alloc, int size){
 
 void pseudo_free(Allocator* alloc,void* memory){
     memory-=(sizeof(int)+sizeof(char));
-    char label = *((char*)memory);
+    ((char*)memory)[0];
     printf("\nDEALLOCATING MEMORY POINTED BY %p . . .", memory);
-    if(label == "b"){
+    if(((char*)memory)[0] == 'b'){
         printf("LABEL b BUDDY ALLOCATOR WILL BE USED TO PERFORM FREE . . .");
         BuddyAllocator_free(&alloc->BuddyAllocator,memory);
     }
-    else if(label == "m"){
+    if(((char*)memory)[0] == 'm'){
         printf("\nLABEL m MEMORY WILL BE FREED THROUG MUNMAPPING . . .");
         Mmap_free(memory);
     }
+    return;
     }
 
 void* Mmap_malloc(int size){
@@ -65,14 +66,14 @@ void* Mmap_malloc(int size){
     memory=mmap( 0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0 );
     if(memory == NULL){
         perror("\n\033[1;31mERROR:\033[0m\t mmap failed\n");
-        return;
+        return NULL;
     }
     printf("\n \033[1;32mSUCCESS:\033[0m A new block of memory has been allocated of size \033[1;33m%d\033[0m  and pointer  \033[1;33m%p\033[0m \n" , size,memory);
     
-    *((char*)address) = "m";
+    ((char*)memory)[0] = 'm';
     memory+= sizeof(char);
-    *((int*)address) = size;
-    memory+=sizeof(int)
+    ((int*)memory)[0] = size;
+    memory+=sizeof(int);
     return(void*) memory;
 }
 
@@ -84,9 +85,9 @@ void Mmap_free(void* memory){
     memory+=sizeof(char);
     int size= *((int*)memory);
     memory-= sizeof(char);
-    printf("\nABOUT TO UNMAP THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m ",memory);
+    printf("\nABOUT TO UNMAP THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND SIZE \033[1;33m%d\033[0m",memory,size);
     munmap((void*)memory,size);
-    printf("\n \033[1;32mSUCCESS:\033[0m\t memory unmapped");
+    printf("\n\033[1;32mSUCCESS:\033[0m\t memory unmapped\n");
     return;
 }
 

@@ -12,3 +12,5 @@ int Allocator_init(Allocator* alloc);
 
 void * pseudo_malloc(Allocator* alloc,int size);
 void pseudo_free(Allocator* alloc, void* memory );
+void* Mmap_malloc(int size);
+void Mmap_free(void* memory);
