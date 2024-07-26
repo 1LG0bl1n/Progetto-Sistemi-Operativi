@@ -114,14 +114,11 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
         return NULL;
     }
     
-    printf("\nBUDDY SYSTEM ALLOCATING 033[1;33m%d\033[0m BYTES + 033[1;33m%ld\033[0m BYTES TO STORE INDEX + 1 BYTE TO STORE LABEL :033[1;33m%ld\033[0m BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int)+1);
+    printf("\nBUDDY SYSTEM ALLOCATING \033[1;33m%d\033[0m BYTES + \033[1;33m%ld\033[0m BYTES TO STORE INDEX + 1 BYTE TO STORE LABEL :\033[1;33m%ld\033[0m BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int)+1);
     size+=sizeof(int);
     size+=sizeof(char);
 
-    if(size>buddY_allocator->buffer_size){
-        printf("\\033[1;31mERROR:\033[0m memory request exceed available memory\n");
-        return NULL;
-    }
+
     int block_level;
     int block_size;
 
@@ -175,11 +172,11 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     set_bit_ancestors(&buddY_allocator->bitmap,block_index,1);
 
     char* address = buddY_allocator->buffer+block_offset(block_index)*block_size;
-    *address = 'b';
-    address+=sizeof(char);
-   *((int*)address) = block_index;
+    address[0] = 'b';
    printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m and pointer  \033[1;33m%p\033[0m \n" , size,block_level,block_index,address);
-       
+    address+=sizeof(char);
+   ((int*)address)[0] = block_index;
+   
     printf("\nResulting BitMap Tree: \n");
 
     Print_Buddy(&buddY_allocator->bitmap);
@@ -196,8 +193,8 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
 
 
     char* mem_ptr= (char*)mem;
-    mem_ptr-=sizeof(int);
-    int block_index = *((int*)mem_ptr);
+    mem_ptr+=sizeof(char);
+    int block_index = ((int*)mem_ptr)[0];
     printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem_ptr,block_index);
 
     // got segmentation fault at the last free
@@ -210,7 +207,7 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
 
 
     if(BitMap_bit(&buddy_allocator->bitmap,block_index) == 0){
-         printf("\\033[1;31mERROR:\033[0m\tmemory block is already free\n");
+         printf("\n\033[1;31mERROR:\033[0m\tmemory block is already free\n");
          return;
     }
     

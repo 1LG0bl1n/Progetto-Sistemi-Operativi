@@ -26,10 +26,9 @@ int Allocator_init(Allocator* alloc) {
 void* pseudo_malloc(Allocator* alloc, int size){
     printf("\nALLOCATING \033[1;33m%d\033[0m BYTES  . . .",size);
     void * memory;
-    
-    if(size< 1024){
+    if(size < 1024){
         printf("\nSIZE IS UNDER 1/4 PAGE-SIZE . . .\n");
-        printf("\n\t\t\t\t\033[1;32m BUDDY ALLOCATOR WILL BE USED TO PERFORM THIS TASK\033[0m\n");
+        printf("\n\t\t\t\t\033[1;34m BUDDY ALLOCATOR WILL BE USED TO PERFORM THIS TASK\033[0m\n");
         memory= BuddyAllocator_malloc(&alloc->BuddyAllocator,size);
         
         return memory;
@@ -44,11 +43,15 @@ void* pseudo_malloc(Allocator* alloc, int size){
 }
 
 void pseudo_free(Allocator* alloc,void* memory){
-    memory-=(sizeof(int)+sizeof(char));
-    ((char*)memory)[0];
+    if(memory == NULL){
+        printf("\n\033[1;31mERROR:\033[0m\t invelid memory reference\n");
+        return;
+    }
+    memory-=(sizeof(int));
+    memory-=sizeof(char);
     printf("\nDEALLOCATING MEMORY POINTED BY %p . . .", memory);
     if(((char*)memory)[0] == 'b'){
-        printf("LABEL b BUDDY ALLOCATOR WILL BE USED TO PERFORM FREE . . .");
+        printf("\nLABEL b BUDDY ALLOCATOR WILL BE USED TO PERFORM FREE . . .");
         BuddyAllocator_free(&alloc->BuddyAllocator,memory);
     }
     if(((char*)memory)[0] == 'm'){
@@ -62,7 +65,7 @@ void* Mmap_malloc(int size){
     void*memory;
     size+=sizeof(int);
     size+=sizeof(char);
-    printf("\nMAPPING 033[1;33m%d\033[0m BYTES + 033[1;33m%ld\033[0m BYTES TO STORE INDEX + 1 BYTE TO STORE LABEL :033[1;33m%ld\033[0m BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int)+1);
+    printf("\nMAPPING \033[1;33m%d\033[0m BYTES + \033[1;33m%ld\033[0m BYTES TO STORE INDEX + \033[1;33m1\033[0m BYTE TO STORE LABEL :\033[1;33m%ld\033[0m BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int)+1);
     memory=mmap( 0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0 );
     if(memory == NULL){
         perror("\n\033[1;31mERROR:\033[0m\t mmap failed\n");
