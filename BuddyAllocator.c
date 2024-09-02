@@ -171,12 +171,12 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     set_bit_children(&buddY_allocator->bitmap,block_index,1);
     set_bit_ancestors(&buddY_allocator->bitmap,block_index,1);
 
-    char* address = buddY_allocator->buffer+block_offset(block_index)*block_size;
+    char* address = (buddY_allocator->buffer)+(block_offset(block_index)*block_size);
     address[0] = 'b';
    printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m and pointer  \033[1;33m%p\033[0m \n" , size,block_level,block_index,address);
     address+=sizeof(char);
    ((int*)address)[0] = block_index;
-   
+
     printf("\nResulting BitMap Tree: \n");
 
     Print_Buddy(&buddY_allocator->bitmap);
@@ -197,7 +197,7 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
     int block_index = ((int*)mem_ptr)[0];
     printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem_ptr,block_index);
 
-    // got segmentation fault at the last free
+    
 
     int dimention =buddy_allocator->minimum_bucket_size* (1<<(buddy_allocator->num_levels - level_index(block_index)));
     char* mem_ptr_check= buddy_allocator->buffer + dimention * block_offset(block_index);
