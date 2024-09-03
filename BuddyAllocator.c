@@ -114,9 +114,9 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
         return NULL;
     }
     
-    printf("\nBUDDY SYSTEM ALLOCATING \033[1;33m%d\033[0m BYTES + \033[1;33m%ld\033[0m BYTES TO STORE INDEX + 1 BYTE TO STORE LABEL :\033[1;33m%ld\033[0m BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int)+1);
+    printf("\nBUDDY SYSTEM ALLOCATING \033[1;33m%d\033[0m BYTES + \033[1;33m%ld\033[0m BYTES TO STORE INDEX :\033[1;33m%ld\033[0m BYTES TOTAL . . .", size,sizeof(int),size+sizeof(int));
     size+=sizeof(int);
-    size+=sizeof(char);
+
 
 
     int block_level;
@@ -172,9 +172,9 @@ void* BuddyAllocator_malloc(BuddyAllocator* buddY_allocator,int size) {
     set_bit_ancestors(&buddY_allocator->bitmap,block_index,1);
 
     char* address = (buddY_allocator->buffer)+(block_offset(block_index)*block_size);
-    address[0] = 'b';
+    
    printf("\nA new block of memory has been allocated of size \033[1;33m%d\033[0m located at level \033[1;33m%d\033[0m and whith index \033[1;33m%d\033[0m and pointer  \033[1;33m%p\033[0m \n" , size,block_level,block_index,address);
-    address+=sizeof(char);
+    
    ((int*)address)[0] = block_index;
 
     printf("\nResulting BitMap Tree: \n");
@@ -192,10 +192,10 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
     }
 
 
-    char* mem_ptr= (char*)mem;
-    mem_ptr+=sizeof(char);
-    int block_index = ((int*)mem_ptr)[0];
-    printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem_ptr,block_index);
+    
+    mem-=sizeof(int);
+    int block_index = ((int*)mem)[0];
+    printf("\nABOUT TO FREE THE MEMORY BLOCK WITH POINTER  \033[1;33m%p\033[0m AND INDEX \033[1;33m%d\033[0m",mem,block_index);
 
     
 
@@ -203,7 +203,7 @@ void BuddyAllocator_free(BuddyAllocator* buddy_allocator,void* mem) {
     char* mem_ptr_check= buddy_allocator->buffer + dimention * block_offset(block_index);
 
     
-     mem_ptr =  mem_ptr_check;
+     mem =  mem_ptr_check;
 
 
     if(BitMap_bit(&buddy_allocator->bitmap,block_index) == 0){

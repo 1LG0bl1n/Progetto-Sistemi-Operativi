@@ -6,6 +6,8 @@
 
 typedef struct{
     BuddyAllocator BuddyAllocator;
+    char* mem_start;
+    char* mem_end ;
 }Allocator;
 
 int Allocator_init(Allocator* alloc);
